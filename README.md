@@ -9,7 +9,31 @@ Cashu is a platform designed to connect individuals seeking casual jobs with emp
 
 ## Setup
 To get started with Cashu, follow these steps:
-1. Clone the Repository:
+1. **Clone the Repository:**
 ```bash
-git clone https://github.com/schin279/
+git clone https://github.com/schin279/cashu
 ```
+2. **Install Dependencies:**
+```bash
+pip install -r requirements.txt
+```
+3. **Set Up Database:**  
+Cashu uses MySQL. To set up the database, just run the following commands:
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+4. **Create Superuser (Optional):**  
+To access the Django admin interface, create a superuser:
+```bash
+python manage.py createsuperuser
+```
+5. **Start the Development Server:**
+```bash
+python manage.py runserver
+```
+6. **Access Cashu:**  
+Open web browser and navigate to 'http://localhost:8000' to access Cashu locally.
+
+## Contact
+Have questions or feedback? Contact us at a1899082@adelaide.edu.au.
