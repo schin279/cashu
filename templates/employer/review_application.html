@@ -1,0 +1,24 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <h2>Application Details</h2>
+    <p>Name: {{ application.applicant.username }}</p>
+    <p>Cover Letter: {{ application.cover_letter }}</p>
+    <p>Resume: <a href="{{ application.resume.url }}" target="_blank">Download Resume</a></p>
+
+    <form action={% url 'accept_application' application.application_id %} method="post" style="display: inline;">
+        {% csrf_token %}
+        <button class="w3-button w3-green" type="submit">Accept</button>
+    </form>
+    <form action={% url 'reject_application' application.application_id %} method="post" style="display: inline;">
+        {% csrf_token %}
+        <button class="w3-button w3-red" type="submit">Reject</button>
+    </form>
+    <br>
+    <br>
+    <a href="{% url 'view_applications' application.job.job_id %}" class="w3-button w3-grey">Cancel</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+   {% if is_employee %}
+        <a href="{% url 'home' %}" class="w3-button w3-orange">Browse Jobs</a>
+        <a href="{% url 'employee_applications' %}" class = "w3-button w3-orange">View Applications</a>
+        <a href="{% url 'employee_active_jobs' %}" class = "w3-button w3-orange">View Active Jobs</a>
+   {% endif %}
+</div>
+
+{% endblock %}

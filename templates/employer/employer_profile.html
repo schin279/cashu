@@ -1,0 +1,23 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <h2>Profile</h2>
+    <h3>Reviews</h3>
+    <div class="w3-card w3-round w3-white w3-padding">
+        {% for job in jobs_done %}
+            {% if job.employer_rating %}
+                <div class="w3-container">
+                    <strong>{{ job.employee.username }}</strong>
+                    <p>Job: {{ job.title }}</p>
+                    <p>Rating: {{ job.employer_rating }}/5</p>
+                    <p>Comments: {{ job.employer_feedback }}</p>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
+    </div>
+    <a href="{% url 'employer_page' %}" class="w3-button w3-blue">Return to Dashboard</a>
+</div>
+{% endblock %}

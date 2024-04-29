@@ -1,0 +1,32 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <h2>Submitted Applications</h2>
+    <ul class="w3-ul w3-card-4">
+        {% for application in applications %}
+            <li class="w3-bar">
+                <div class="w3-bar-item" style="width: 80%;">
+                    <span class ="w3-large">{{ application.job.title }}</span><br>
+                    <span>Date applied: {{ application.date_applied }}</span><br>
+                </div>
+                <div class="w3-bar-item" style="width: 20%; text-align: right;">
+                    <form action="{% url 'edit_application' application.application_id %}" method="get" style="display: inline;">
+                        <button class="w3-button w3-orange" type="submit">Edit</button>
+                    </form>
+                    <form action="{% url 'delete_application' application.application_id %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button class="w3-button w3-red" type="submit">Delete</button>
+                    </form>
+                </div>
+            </li>
+        {% empty %}
+            <p>No pending applications.</p>
+        {% endfor %}
+    </ul>
+    <br>
+    <a href="{% url 'employee_page' %}" class="w3-button w3-blue">Return to Dashboard</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container">
+    <h2>Apply for {{ job.title }}</h2>
+    <form method="post" class="w3-container" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <button type="submit" class="w3-button w3-orange">Submit Application</button>
+    </form>
+</div>
+
+{% endblock %}

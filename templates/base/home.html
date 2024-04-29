@@ -1,0 +1,36 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    {% if jobs %}
+        <ul class="w3-ul w3-card-4">
+            {% for job in jobs %}
+                <li class="w3-bar">
+                    <div class="w3-bar-item">
+                        <span class="w3-large">{{ job.title }}</span><br>
+                        <span>Description: {{ job.description }}</span><br>
+                        <span>Required Skill(s): {{ job.requirements }}</span><br>
+                        <span>Rate: {{ job.rate }}/hr</span><br>
+                        <span>Date posted: {{ job.date_posted }}</span><br>
+                        <span>Posted by: {{ job.employer }}</span><br>
+                        {% if is_employee %}
+                            {% if job.job_id in applied_jobs %}
+                                <button class="w3-button w3-black" disabled>Applied</button>
+                            {% else %}
+                                <form action="{% url 'apply' job.job_id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="w3-button w3-orange">Apply</button>
+                                </form>
+                            {% endif %} 
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No jobs available at the moment. Come back later!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

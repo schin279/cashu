@@ -1,0 +1,15 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    {% if is_employer %}
+        <a href="{% url 'post_job' %}" class="w3-button w3-orange">Post Job</a>
+        <a href="{% url 'employer_jobs' %}" class="w3-button w3-orange">View Job Listings</a>
+        <a href="{% url 'employer_active_jobs' %}" class="w3-button w3-orange">View Active Jobs</a>
+    {% else %}
+        <p>You are not authorised to view this page.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

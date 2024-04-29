@@ -1,0 +1,16 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container">
+    <h2>Delete Job</h2>
+    <p>Are you sure you want to delete the following job?</p>
+    <p><strong>Title:</strong> {{ job.title }}</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm</button>
+        <a href="{% url 'employer_jobs' %}">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

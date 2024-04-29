@@ -1,0 +1,24 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <h3>Applicants</h3>
+    <ul class="w3-ul w3-card-4">
+        {% for application in applications %}
+            {% if application.status != 'Accepted' and application.status != 'Rejected' %}
+                <li class="w3-bar">
+                    Name: {{ application.applicant.username }}<br>
+                    Date applied: {{ application.date_applied }} <br>
+                    <a href="{% url 'review_application' application.application_id %}" class="w3-button w3-orange">View Details</a>
+                </li>
+            {% endif %}
+        {% empty %}
+            <li>No pending applicants.</li>
+        {% endfor %}
+    </ul>
+    <br>
+    <a href="{% url 'employer_jobs' %}" class="w3-button w3-blue">Back</a>
+</div>
+
+{% endblock %}
