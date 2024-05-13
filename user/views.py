@@ -14,8 +14,8 @@ def home(request):
     is_employer = request.user.groups.filter(name='employer').exists()
 
     # checks for already applied jobs (employees)
-    applied_jobs = request.user.application_set.all().values_list('job_id', flat=True)
-    
+    applied_jobs = request.user.application_set.all().values_list('job_id', flat=True) if request.user.is_authenticated else []
+
     context = {'jobs': jobs, 'is_employee': is_employee, 'is_employer': is_employer, 'applied_jobs': applied_jobs}
     return render(request, 'base/home.html', context)
 
@@ -54,12 +54,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            if user.groups.filter(name='employee').exists():
-                return redirect('employee_page')
-            elif user.groups.filter(name='employer').exists():
-                return redirect('employer_page')
-            else:
-                return redirect('home')
+            return redirect('home')
         else:
             messages.info(request, 'Username OR password is incorrect')
 
@@ -70,19 +65,6 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
-@login_required(login_url='login')
-def employee_page(request):
-    is_employee = request.user.groups.filter(name='employee').exists()
-    return render(request, 'employee/employee_page.html', {'is_employee': is_employee})
-
-@login_required(login_url='login')
-def employer_page(request):
-    is_employer = request.user.groups.filter(name='employer').exists()
-    if is_employer:
-        return render(request, 'employer/employer_page.html', {'is_employer': is_employer})
-    else:
-        return redirect('home')
-    
 @login_required(login_url='login')
 def employer_jobs(request):
     is_employer = request.user.groups.filter(name='employer').exists()
@@ -95,14 +77,16 @@ def employer_jobs(request):
 
 @login_required(login_url='login')
 def employee_profile(request):
+    is_employee = request.user.groups.filter(name='employee').exists()
     employee = request.user
     active_jobs = Job.objects.filter(employee=employee, is_active=True)
     completed_jobs = Job.objects.filter(employee=employee, is_completed=True).exclude(rating__isnull=True)
-    return render(request, 'employee/employee_profile.html', {'employee': employee, 'employee_jobs': active_jobs, 'completed_jobs':completed_jobs})
+    return render(request, 'employee/employee_profile.html', {'is_employee': is_employee, 'employee': employee, 'employee_jobs': active_jobs, 'completed_jobs':completed_jobs})
 
 @login_required(login_url='login')
 def employer_profile(request):
+    is_employer = request.user.groups.filter(name='employer').exists()
     employer = request.user
     active_jobs = Job.objects.filter(employer=employer, is_active=True)
     completed_jobs = Job.objects.filter(employer=employer, is_completed=True).exclude(rating__isnull=True)
-    return render(request, 'employer/employer_profile.html', {'employer': employer, 'employer_jobs': active_jobs, 'jobs_done':completed_jobs})
+    return render(request, 'employer/employer_profile.html', {'is_employer': is_employer, 'employer': employer, 'employer_jobs': active_jobs, 'jobs_done':completed_jobs})
