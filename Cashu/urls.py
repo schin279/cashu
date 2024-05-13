@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from user.views import home, signup, loginPage, logoutUser, employee_page, employer_page, employer_jobs, employee_profile, employer_profile
-from job.views import post_job, edit_job, delete_job, view_applications, review_application, accept_application, reject_application, employer_active_jobs, job_completed
+from user.views import home, signup, loginPage, logoutUser, employer_jobs, employee_profile, employer_profile
+from job.views import post_job, edit_job, delete_job, view_applications, review_application, accept_application, reject_application, employer_active_jobs, job_completed, job_list
 from applications.views import apply, employee_applications, edit_application, delete_application, employee_active_jobs, rate_employer
 
 urlpatterns = [
@@ -25,8 +25,6 @@ urlpatterns = [
     path('signup/', signup, name="signup"),
     path('login/', loginPage, name='login'),
     path('logout/', logoutUser, name='logout'),
-    path('employee/', employee_page, name="employee_page"),
-    path('employer/', employer_page, name="employer_page"),
     path('post_job/', post_job, name="post_job"),
     path('employer/jobs/', employer_jobs, name="employer_jobs"),
     path('employer/jobs/<int:job_id>/edit/', edit_job, name="edit_job"),
@@ -45,4 +43,5 @@ urlpatterns = [
     path('employee/profile/', employee_profile, name="employee_profile"),
     path('employee/jobs/<int:job_id>/rate/', rate_employer, name="rate_employer"),
     path('employer/profile/', employer_profile, name="employer_profile"),
+    path('jobs/', job_list, name="job_list"),
 ]

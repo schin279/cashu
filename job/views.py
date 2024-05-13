@@ -43,6 +43,17 @@ def delete_job(request, job_id):
         return redirect('employer_jobs')
     return render(request, 'employer/delete_job.html', {'job': job})
 
+def job_list(request):
+    jobs = Job.objects.filter(is_deleted=False)
+    is_employee = request.user.groups.filter(name='employee').exists()
+    is_employer = request.user.groups.filter(name='employer').exists()
+
+    # checks for already applied jobs (employees)
+    applied_jobs = request.user.application_set.all().values_list('job_id', flat=True) if request.user.is_authenticated else []
+
+    context = {'jobs': jobs, 'is_employee': is_employee, 'is_employer': is_employer, 'applied_jobs': applied_jobs}
+    return render(request, 'base/job_list.html', context)
+
 # view applications for jobs posted (employer)
 @login_required(login_url='login')
 def view_applications(request, job_id):

@@ -1,8 +1,42 @@
 {% extends 'base/navbar.html' %}
 
 {% block content %}
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 30px auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+        gap: 20px;
+    }
+
+    .dashboard-link {
+        padding: 10px 15px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #FF7518;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .dashboard-link:hover {
+        background-color: #8B4000;
+    }
+</style>
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    <h2>Profile</h2>
+    <h2>{{ user.username }}'s Profile</h2>
+    <div class="dashboard-container">
+        {% if is_employee %}
+            <a href="{% url 'employee_applications' %}" class="dashboard-link">My Applications</a>
+            <a href="{% url 'employee_active_jobs' %}" class="dashboard-link">My Active Jobs</a>
+        {% else %}
+            <p>You are not authorised to view this page.</p>
+        {% endif %}
+    </div>
     <h3>Reviews</h3>
     <div class="w3-card w3-round w3-white w3-padding">
         {% for job in completed_jobs %}
@@ -18,6 +52,5 @@
             <p>No reviews yet.</p>
         {% endfor %}
     </div>
-    <a href="{% url 'employee_page' %}" class="w3-button w3-blue">Return to Dashboard</a>
 </div>
 {% endblock %}

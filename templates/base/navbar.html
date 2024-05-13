@@ -9,6 +9,19 @@
     .navbar-button {
         margin-top: 5px;
     }
+    .custom-button {
+      background-color: #FF7518;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .custom-button:hover {
+      background-color: #8B4000;
+    }
 </style>
 </head>
 <body>
@@ -22,18 +35,25 @@
     <div class="w3-right w3-hide-small">
       {% if user.is_authenticated %}
         {% if is_employee %}
-          <a href="{% url 'employee_page' %}" class="w3-bar-item w3-button navbar-button">Dashboard</a>
           <a href="{% url 'employee_profile' %}" class="w3-bar-item w3-button navbar-button">Profile</a>
         {% endif %}
         {% if is_employer %}
-          <a href="{% url 'employer_page' %}" class="w3-bar-item w3-button navbar-button">Dashboard</a>
           <a href="{% url 'employer_profile' %}" class="w3-bar-item w3-button navbar-button">Profile</a>
         {% endif %}
         <a href="{% url 'logout' %}" class="w3-bar-item w3-button navbar-button">Logout</a>
       {% else %}
-        <a href="{% url 'login' %}" class="w3-bar-item w3-button navbar-button">Login</a>
+        <a href="{% url 'login' %}" class="w3-bar-item w3-button navbar-button w3">Login</a>
       {% endif %}
     </div>
+    <div class="w3-left w3-hide-small">
+      {% if user.is_authenticated %}
+        {% if is_employee %}
+        <a href="{% url 'job_list' %}" class="w3-bar-item w3-button navbar-button custom-button">Browse Jobs</a>
+        {% endif %}
+        {% if is_employer %}
+          <a href="{% url 'post_job' %}" class="w3-bar-item w3-button navbar-button custom-button">Post a Job</a>
+        {% endif %}
+      {% endif %}
   </div>
 </div>
 

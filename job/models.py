@@ -9,7 +9,7 @@ class Job(models.Model):
     description = models.TextField()
     requirements = models.TextField()
     location = models.CharField(max_length=255)
-    rate = models.DecimalField(max_digits=5, decimal_places=2)
+    rate = models.IntegerField(blank=True, null=True)
     date_posted = models.DateField(auto_now_add=True)
     employer = models.ForeignKey(User, on_delete=models.CASCADE)
     employee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='accepted_jobs')

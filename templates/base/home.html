@@ -1,36 +1,87 @@
 {% extends 'base/navbar.html' %}
 
 {% block content %}
-
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    {% if jobs %}
-        <ul class="w3-ul w3-card-4">
-            {% for job in jobs %}
-                <li class="w3-bar">
-                    <div class="w3-bar-item">
-                        <span class="w3-large">{{ job.title }}</span><br>
-                        <span>Description: {{ job.description }}</span><br>
-                        <span>Required Skill(s): {{ job.requirements }}</span><br>
-                        <span>Rate: {{ job.rate }}/hr</span><br>
-                        <span>Date posted: {{ job.date_posted }}</span><br>
-                        <span>Posted by: {{ job.employer }}</span><br>
-                        {% if is_employee %}
-                            {% if job.job_id in applied_jobs %}
-                                <button class="w3-button w3-black" disabled>Applied</button>
-                            {% else %}
-                                <form action="{% url 'apply' job.job_id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="w3-button w3-orange">Apply</button>
-                                </form>
-                            {% endif %} 
-                        {% endif %}
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No jobs available at the moment. Come back later!</p>
-    {% endif %}
+{% load static %}
+<style>
+    .background-container {
+      background-size: cover;
+      background-position: center;
+      height: auto;
+      position: relative;
+    }
+    .banner-image {
+        width: 80%;
+        height: auto;
+        margin: 0 auto;
+        margin-top: 3%;
+    }
+    .cta-section {
+        text-align: center;
+        margin-top: 50px;
+    }
+    .cta-section h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .cta-button1 {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #FF7518;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    .cta-button2 {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #F4592F;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    .cta-button1:hover {
+        background-color: #8B4000;
+    }
+    .cta-button2:hover {
+        background-color: #8B4000;
+    }
+    .cta-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 20px;
+        margin-left: 100px;
+    }
+    .cta-section > div {
+        margin-right: 20px;
+    }
+</style>
+<div class="background-container" style="background-color: #FFF5EE">
+    <div class="banner-image">
+        <img src="{% static 'banner2.png' %}" alt="banner image">
+    </div>
 </div>
-
+{% if not user.is_authenticated %}
+<div class="cta-section">
+    <div class="cta-container">
+        <div class="w3-container">
+            <h2> Need help with a job? </h2>
+            <a href="{% url 'signup' %}" class="cta-button1">Post a job</a>
+        </div>
+        <div class="w3-container">
+            <h2> Looking for casual work? </h2>
+            <a href="{% url 'signup' %}" class="cta-button2">Apply now</a>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
