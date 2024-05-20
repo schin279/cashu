@@ -5,9 +5,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
 <style>
     .navbar-button {
         margin-top: 5px;
+    }
+    .custom-nav {
+      border: none;
+      padding: 10px 20px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
     }
     .custom-button {
       background-color: #FF7518;
@@ -18,44 +27,59 @@
       cursor: pointer;
       border-radius: 5px;
       transition: background-color 0.3s ease;
+      text-decoration: none;
     }
     .custom-button:hover {
       background-color: #8B4000;
     }
 </style>
-</head>
 <body>
 
 <!-- Navbar -->
 <div class="w3-top">
   <div class="w3-bar w3-white w3-wide w3-padding w3-card">
     {% load static %}
-    <a href="{% url 'home' %}" class="w3-bar-item button"><img src="{% static 'logo-no-background.png' %}" alt="logo" style="height: 40px; margin-right: 10px"></a>
-    <!-- Float links to the right -->
+    <a href="{% url 'home' %}" class="w3-bar-item button"><img src="{% static 'logo-no-background.png' %}" alt="logo" style="height: 30px; margin-right: 10px"></a>
     <div class="w3-right w3-hide-small">
       {% if user.is_authenticated %}
         {% if is_employee %}
-          <a href="{% url 'employee_profile' %}" class="w3-bar-item w3-button navbar-button">Profile</a>
+          <a href="{% url 'employee_applications' %}" class="w3-bar-item w3-button navbar-button custom-nav">My Applications</a>
+          <a href="{% url 'employee_active_jobs' %}" class="w3-bar-item w3-button navbar-button custom-nav">My Jobs</a>
+          <a href="{% url 'employee_profile' %}" class="w3-bar-item w3-button navbar-button custom-nav">Profile</a>
+        {% elif is_employer %}
+          <a href="{% url 'employer_jobs' %}" class="w3-bar-item w3-button navbar-button custom-nav">My Job Listings</a>
+          <a href="{% url 'employer_active_jobs' %}" class="w3-bar-item w3-button navbar-button custom-nav">My Active Jobs</a>
+          <a href="{% url 'employer_profile' %}" class="w3-bar-item w3-button navbar-button custom-nav">Profile</a>
         {% endif %}
-        {% if is_employer %}
-          <a href="{% url 'employer_profile' %}" class="w3-bar-item w3-button navbar-button">Profile</a>
-        {% endif %}
-        <a href="{% url 'logout' %}" class="w3-bar-item w3-button navbar-button">Logout</a>
+      <a href="{% url 'logout' %}" class="w3-bar-item w3-button navbar-button custom-nav">Logout</a>
       {% else %}
-        <a href="{% url 'login' %}" class="w3-bar-item w3-button navbar-button w3">Login</a>
+      <a href="{% url 'signup' %}" class="w3-bar-item w3-button navbar-button custom-nav">Sign up</a>
+      <a href="{% url 'login' %}" class="w3-bar-item w3-button navbar-button custom-nav">Login</a>
       {% endif %}
     </div>
     <div class="w3-left w3-hide-small">
-      {% if user.is_authenticated %}
-        {% if is_employee %}
-        <a href="{% url 'job_list' %}" class="w3-bar-item w3-button navbar-button custom-button">Browse Jobs</a>
-        {% endif %}
-        {% if is_employer %}
-          <a href="{% url 'post_job' %}" class="w3-bar-item w3-button navbar-button custom-button">Post a Job</a>
-        {% endif %}
+      {% if is_employer %}
+        <a href="{% url 'post_job' %}" class="w3-bar-item navbar-button custom-button" style="margin-left: 30px">Post a Job</a>
       {% endif %}
+      <a href="{% url 'job_list' %}" class="w3-bar-item w3-button navbar-button custom-nav" style="margin-left: 30px">Browse Jobs</a>
+      <div class="w3-dropdown-hover">
+        <a class="w3-padding-medium w3-button navbar-button custom-nav" style="margin-top: 3.4px;" title="Categories">Categories<i class="fa fa-caret-down"></i></a>     
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="{% url 'job_list' %}?category=IT" class="w3-bar-item w3-button navbar-button">IT & Programming</a>
+          <a href="{% url 'job_list' %}?category=Design" class="w3-bar-item w3-button navbar-button">Design & Creative</a>
+          <a href="{% url 'job_list' %}?category=Writing" class="w3-bar-item w3-button navbar-button">Writing & Translation</a>
+          <a href="{% url 'job_list' %}?category=Admin" class="w3-bar-item w3-button navbar-button">Admin Support</a>
+          <a href="{% url 'job_list' %}?category=Customer" class="w3-bar-item w3-button navbar-button">Customer Support</a>
+          <a href="{% url 'job_list' %}?category=Sales" class="w3-bar-item w3-button navbar-button">Sales & Marketing</a>
+          <a href="{% url 'job_list' %}?category=Other" class="w3-bar-item w3-button navbar-button">Other</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 {% block content %}
 {% endblock %}
+
+</body>
+</html>

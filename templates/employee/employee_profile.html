@@ -2,16 +2,82 @@
 
 {% block content %}
 <style>
-    .dashboard-container {
-        max-width: 1400px;
-        margin: 30px auto;
+    .profile-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #F4EEE0;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-header {
         display: flex;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+
+    .profile-header img {
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        margin-right: 20px;
+    }
+
+    .profile-header h2 {
+        margin: 0;
+        font-size: 32px;
+        color: #FF7518;
+    }
+
+    .profile-details {
+        display: flex;
+        justify-content: space-between;
         flex-wrap: wrap;
-        justify-content: left;
-        gap: 20px;
+    }
+
+    .profile-details .detail-item {
+        width: 48%;
+        margin-bottom: 20px;
+    }
+
+    .profile-details .detail-item h4 {
+        margin-bottom: 5px;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .profile-details .detail-item p {
+        margin: 0;
+        color: #555;
+    }
+
+    .reviews-container {
+        margin-top: 40px;
+    }
+
+    .review-item {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-item strong {
+        color: #FF7518;
+        font-size: 18px;
+    }
+
+    .review-item p {
+        margin: 5px 0;
+        color: #555;
     }
 
     .dashboard-link {
+        display: inline-block;
         padding: 10px 15px;
         font-size: 16px;
         font-weight: bold;
@@ -21,31 +87,45 @@
         border-radius: 5px;
         text-decoration: none;
         transition: background-color 0.3s;
+        margin-top: 20px;
     }
 
     .dashboard-link:hover {
         background-color: #8B4000;
     }
 </style>
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    <h2>{{ user.username }}'s Profile</h2>
-    <div class="dashboard-container">
-        {% if is_employee %}
-            <a href="{% url 'employee_applications' %}" class="dashboard-link">My Applications</a>
-            <a href="{% url 'employee_active_jobs' %}" class="dashboard-link">My Active Jobs</a>
-        {% else %}
-            <p>You are not authorised to view this page.</p>
-        {% endif %}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>{{ user.username }}'s Profile</h2>
+    </div>
+    <div class="profile-details">
+        <div class="detail-item">
+            <h4>Name</h4>
+            <p>{{ employee.first_name}} {{ employee.last_name }}</p>
+        </div>
+        <div class="detail-item">
+            <h4>Date of Birth</h4>
+            <p>{{ employee.employee_profile.dob }}</p>
+        </div>
+        <div class="detail-item">
+            <h4>Location</h4>
+            <p>{{ employee.employee_profile.location }}</p>
+        </div>
+        <div class="detail-item">
+            <h4>Email</h4>
+            <p>{{ user.email }}</p>
+        </div>
     </div>
     <h3>Reviews</h3>
-    <div class="w3-card w3-round w3-white w3-padding">
+    <div class="reviews-container">
         {% for job in completed_jobs %}
             {% if job.rating %}
-                <div class="w3-container">
+                <div class="review-item">
                     <strong>{{ job.employer.username }}</strong>
-                    <p>Job: {{ job.title }}</p>
-                    <p>Rating: {{ job.rating }}/5</p>
-                    <p>Comments: {{ job.feedback }}</p>
+                    <p><strong>Job:</strong> {{ job.title }}</p>
+                    <p><strong>Rating:</strong> {{ job.rating }}/5</p>
+                    <p><strong>Comments:</strong> {{ job.feedback }}</p>
                 </div>
             {% endif %}
         {% empty %}

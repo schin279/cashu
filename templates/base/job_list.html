@@ -1,34 +1,109 @@
 {% extends 'base/navbar.html' %}
 
 {% block content %}
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    {% if jobs %}
-        <ul class="w3-ul w3-card-4">
+<style>
+    .job-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .job-card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .job-header {
+        background-color: #f0f0f0;
+        padding: 15px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .job-title {
+        margin: 0;
+        font-size: 1.4em;
+        color: #333;
+    }
+
+    .job-content {
+        padding: 15px;
+    }
+
+    .job-details {
+        margin-bottom: 10px;
+    }
+
+    .job-details p {
+        margin: 5px 0;
+    }
+
+    .apply-section {
+        padding: 15px;
+        text-align: right;
+        background-color: #f0f0f0;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .apply-button {
+        background-color: #FF7518;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    .apply-button:hover {
+        background-color: #8B4000;
+    }
+</style>
+
+<div class="w3-container w3-content" style="max-width: 100%; margin-top: 80px;">
+    <div class="w3-row-padding">
+        {% if jobs %}
             {% for job in jobs %}
-                <li class="w3-bar">
-                    <div class="w3-bar-item">
-                        <span class="w3-large">{{ job.title }}</span><br>
-                        <span>Description: {{ job.description }}</span><br>
-                        <span>Required Skill(s): {{ job.requirements }}</span><br>
-                        <span>Rate: {{ job.rate }}/hr</span><br>
-                        <span>Date posted: {{ job.date_posted }}</span><br>
-                        <span>Posted by: {{ job.employer }}</span><br>
+            <div class="w3-third">
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">{{ job.title }}</h3>
+                    </div>
+
+                    <div class="job-content">
+                        <div class="job-details">
+                            <p><strong>Description:</strong> {{ job.description }}</p>
+                            <p><strong>Required Skill(s):</strong> {{ job.requirements }}</p>
+                            <p><strong>Rate:</strong> {{ job.pay_rate }}/hr</p>
+                            <p><strong>Date posted:</strong> {{ job.date_posted }}</p>
+                            <p><strong>Posted by:</strong> {{ job.employer }}</p>
+                        </div>
+
                         {% if is_employee %}
                             {% if job.job_id in applied_jobs %}
-                                <button class="w3-button w3-black" disabled>Applied</button>
+                                <button class="apply-button w3-grey" disabled>Applied</button>
                             {% else %}
                                 <form action="{% url 'apply' job.job_id %}" method="post">
                                     {% csrf_token %}
-                                    <button type="submit" class="w3-button w3-orange">Apply</button>
+                                    <button type="submit" class="apply-button">Apply Now</button>
                                 </form>
-                            {% endif %} 
-                        {% endif %}
+                            {% endif %}
+                        {% endif%}
                     </div>
-                </li>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>No jobs available at the moment. Come back later!</p>
-    {% endif %}
+        {% else %}
+        <div class="w3-col w3-margin-bottom">
+            <p>No jobs available at the moment. Come back later!</p>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

@@ -9,4 +9,5 @@ urlpatterns = [
     path('employer/jobs/',views.employer_jobs, name="employer_jobs"),
     path('employee/profile/', views.employee_profile, name="employee_profile"),
     path('employer/profile/', views.employer_profile, name="employer_profile"),
+    path('reset_password/', views.reset_password, name="reset_password"),
 ]

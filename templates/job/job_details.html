@@ -1,0 +1,91 @@
+{% extends 'base/navbar.html' %}
+
+{% block content %}
+{% load static %}
+<style>
+    .job-detail-container {
+        padding-top: 80px;
+        max-width: 800px;
+        margin: 80px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+    .job-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .job-company {
+        color: #666;
+        margin-bottom: 15px;
+    }
+    .job-description {
+        color: #333;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    .job-requirements {
+        color: #333;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    .job-details {
+        color: #666;
+        margin-bottom: 10px;
+    }
+    .job-details .detail-label {
+        font-weight: 600;
+    }
+    .apply-button {
+        background-color: #FF7518;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    .apply-button:hover {
+        background-color: #8B4000;
+    }
+    .attachment-link {
+        display: block;
+        margin-top: 10px;
+    }
+</style>
+<div class="job-detail-container">
+    <div class="job-title">{{ job.title }}</div>
+    <div class="job-company">Posted by {{ job.employer }}</div>
+    <div class="job-description"><b>Description:</b><br>{{ job.description }}</div>
+    <div class="job-requirements"><b>Requirements:</b> <br>{{ job.requirements }}</div>
+    {% if job.attachment %}
+        <a href="{{ job.attachment.url }}" class="attachment-link" download>Download Job Description</a>
+    {% endif %}
+    <br>
+    <div class="job-details">
+        <span class="detail-label">Location:</span> {{ job.location }}<br>
+        <span class="detail-label">Job Type:</span> {{ job.category }}<br>
+        <span class="detail-label">Pay Rate:</span> {{ job.pay_rate }} per hour<br>
+        <span class="detail-label">Posted:</span> {{ job.date_posted|date:"d M Y" }}
+    </div>
+    {% if not user.is_authenticated %}
+        <a href="{% url 'login' %}" class="apply-button">Login to Apply</a>    
+    {% elif is_employee %}
+        {% if job.job_id in applied_jobs %}
+            <button class="apply-button w3-grey" disabled>Applied</button>
+        {% else %}
+            <form action="{% url 'apply' job.job_id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="apply-button">Apply Now</button>
+            </form>
+        {% endif %}
+    {% endif%}
+</div>
+{% endblock %}
