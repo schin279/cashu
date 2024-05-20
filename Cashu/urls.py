@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from user.views import home, signup, loginPage, logoutUser, employer_jobs, employee_profile, employer_profile
-from job.views import post_job, edit_job, delete_job, view_applications, review_application, accept_application, reject_application, employer_active_jobs, job_completed, job_list
+from user.views import home, signup, loginPage, logoutUser, employer_jobs, employee_profile, employer_profile, reset_password
+from job.views import post_job, edit_job, delete_job, view_applications, review_application, accept_application, reject_application, employer_active_jobs, job_completed, job_list, job_details
 from applications.views import apply, employee_applications, edit_application, delete_application, employee_active_jobs, rate_employer
 
 urlpatterns = [
@@ -44,4 +44,6 @@ urlpatterns = [
     path('employee/jobs/<int:job_id>/rate/', rate_employer, name="rate_employer"),
     path('employer/profile/', employer_profile, name="employer_profile"),
     path('jobs/', job_list, name="job_list"),
+    path('jobs/<int:job_id>/', job_details, name="job_details"),
+    path('reset_password/', reset_password, name="reset_password"),
 ]

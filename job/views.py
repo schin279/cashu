@@ -9,23 +9,32 @@ from applications.models import Application
 # job posting functionality (employer)
 @login_required(login_url='login')
 def post_job(request):
+    is_employee = request.user.groups.filter(name='employee').exists()
+    is_employer = request.user.groups.filter(name='employer').exists()
+
     if request.method == 'POST':
-        form = CreateJobForm(request.POST)
+        form = CreateJobForm(request.POST, request.FILES)
         if form.is_valid():
             job = form.save(commit=False)
             job.employer = request.user
             job.save()
-            return redirect('employer_page')
+            return redirect('employer_jobs')
     else:
         form = CreateJobForm()
-    return render(request, 'employer/post_job.html', {'form': form})
+
+    context = {
+        'form':form,
+        'is_employee':is_employee,
+        'is_employer':is_employer,
+    }
+    return render(request, 'employer/post_job.html', context)
 
 # edit job posts (employer)
 @login_required(login_url='login')
 def edit_job(request, job_id):
     job = get_object_or_404(Job, job_id=job_id)
     if request.method == 'POST':
-        form = CreateJobForm(request.POST, instance=job)
+        form = CreateJobForm(request.POST, request.FILES, instance=job)
         if form.is_valid():
             form.save()
             return redirect('employer_jobs')
@@ -44,9 +53,13 @@ def delete_job(request, job_id):
     return render(request, 'employer/delete_job.html', {'job': job})
 
 def job_list(request):
+    category = request.GET.get('category')
     jobs = Job.objects.filter(is_deleted=False)
     is_employee = request.user.groups.filter(name='employee').exists()
     is_employer = request.user.groups.filter(name='employer').exists()
+
+    if category:
+        jobs = jobs.filter(category=category)
 
     # checks for already applied jobs (employees)
     applied_jobs = request.user.application_set.all().values_list('job_id', flat=True) if request.user.is_authenticated else []
@@ -103,8 +116,9 @@ def employer_jobs(request):
 
 @login_required(login_url='login')
 def employer_active_jobs(request):
+    is_employer = request.user.groups.filter(name='employer').exists()
     active_jobs = Job.objects.filter(employer=request.user, is_active=True, is_completed=False)
-    return render(request, 'employer/active_jobs.html', {'active_jobs':active_jobs})
+    return render(request, 'employer/active_jobs.html', {'active_jobs':active_jobs, 'is_employer':is_employer})
 
 @login_required(login_url='login')
 def job_completed(request, job_id):
@@ -118,3 +132,11 @@ def job_completed(request, job_id):
         job.is_completed = True
         job.save()
         return redirect('employer_active_jobs')
+    
+def job_details(request, job_id):
+    is_employee = request.user.groups.filter(name='employee').exists()
+    is_employer = request.user.groups.filter(name='employer').exists()
+    # checks for already applied jobs (employees)
+    applied_jobs = request.user.application_set.all().values_list('job_id', flat=True) if request.user.is_authenticated else []
+    job = get_object_or_404(Job, job_id=job_id)
+    return render(request, 'job/job_details.html', {'job': job, 'is_employee': is_employee, 'is_employer': is_employer, 'applied_jobs': applied_jobs})
