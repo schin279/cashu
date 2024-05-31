@@ -1,46 +1,46 @@
 {% extends 'base/navbar.html' %}
 
 {% block content %}
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    <h2>Active Jobs</h2>
-    <ul class="w3-ul w3-card-4">
+<div class="w3-container w3-content" style="max-width:1400px; margin-top:80px;">
+    <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Active Jobs</h2>
+    <ul class="w3-ul">
         {% for job in employee_jobs %}
-            <li class="w3-bar">
-                <div class="w3-bar-item" style="width: 80%;">
-                    <span class ="w3-large">{{ job.title }}</span><br>
-                    <span>Employer: {{ job.employer.username }}</span><br>
+            <li class="w3-card-4 w3-margin w3-padding" style="display: flex; align-items: center;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0; font-size: 1.5em;">{{ job.title }}</h3>
+                    <p style="margin: 5px 0; color: grey;">Employer: {{ job.employer.username }}</p>
                     {% if job.is_completed %}
                         <span style="color: orange;">Completed</span>
-                        <button onclick="document.getElementById('completeModal{{ job.id }}').style.display='block'">Rate</button>
+                        <button class="w3-button w3-orange" onclick="document.getElementById('completeModal{{ job.id }}').style.display='block'" style="margin-top: 10px;">Rate</button>
                     {% else %}
                         <span style="color: green;">Active</span>
                     {% endif %}
                 </div>
             </li>
         {% empty %}
-            <li>No active jobs.</li>
+            <li class="w3-card-4 w3-margin w3-padding">
+                <p style="text-align: center; color: grey;">No active jobs.</p>
+            </li>
         {% endfor %}
     </ul>
-    <br>
-    <a href="{% url 'employee_profile' %}" class="w3-button w3-orange">Back to Profile</a>
 </div>
 
 {% for job in employee_jobs %}
-    <div id="completeModal{{ job.id }}" class="w3-modal">
-        <div class="w3-modal-content">
-            <header class="w3-container w3-teal"> 
+    <div id="completeModal{{ job.id }}" class="w3-modal" style="display: none;">
+        <div class="w3-modal-content" style="max-width: 500px; margin: auto; border-radius: 8px;">
+            <header class="w3-container w3-teal" style="border-top-left-radius: 8px; border-top-right-radius: 8px;"> 
                 <span onclick="document.getElementById('completeModal{{ job.id }}').style.display='none'" 
                 class="w3-button w3-display-topright">&times;</span>
-                <h2>How would you rate the engagement?</h2>
+                <h2 style="margin: 10px 0;">Rate the Engagement</h2>
             </header>
-            <div class="w3-container">
+            <div class="w3-container" style="padding: 20px;">
                 <form action="{% url 'rate_employer' job.job_id %}" method="POST">
                     {% csrf_token %}
-                    <label for="rating">Rating (out of 5):</label>
-                    <input type="number" id="rating" name="rating" min="1" max="5" required><br>
-                    <label for="feedback">Feedback:</label><br>
-                    <textarea id="feedback" name="feedback" rows="4" cols="50" required></textarea><br>
-                    <input type="submit" value="Submit">
+                    <label for="rating" style="display: block; margin-bottom: 8px;">Rating (out of 5):</label>
+                    <input type="number" id="rating" name="rating" min="1" max="5" required style="width: 100%; padding: 8px; margin-bottom: 10px;"><br>
+                    <label for="feedback" style="display: block; margin-bottom: 8px;">Feedback:</label>
+                    <textarea id="feedback" name="feedback" rows="4" style="width: 100%; padding: 8px;" required></textarea><br>
+                    <input type="submit" value="Submit" class="w3-button w3-teal" style="margin-top: 10px;">
                 </form>
             </div>
         </div>
