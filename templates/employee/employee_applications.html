@@ -2,31 +2,32 @@
 
 {% block content %}
 
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    <h2>Submitted Applications</h2>
-    <ul class="w3-ul w3-card-4">
+<div class="w3-container w3-content" style="max-width:1400px; margin-top:80px;">
+    <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Submitted Applications</h2>
+    <ul class="w3-ul">
         {% for application in applications %}
-            <li class="w3-bar">
-                <div class="w3-bar-item" style="width: 80%;">
-                    <span class ="w3-large">{{ application.job.title }}</span><br>
-                    <span>Date applied: {{ application.date_applied }}</span><br>
+            <li class="w3-card-4 w3-margin w3-padding" style="display: flex; align-items: center;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0; font-size: 1.5em;">{{ application.job.title }}</h3>
+                    <p style="margin: 5px 0; color: grey;">Date applied: {{ application.date_applied }}</p>
                 </div>
-                <div class="w3-bar-item" style="width: 20%; text-align: right;">
-                    <form action="{% url 'edit_application' application.application_id %}" method="get" style="display: inline;">
-                        <button class="w3-button w3-orange" type="submit">Edit</button>
+                <div style="flex-shrink: 0; display: flex; gap: 10px;">
+                    <form action="{% url 'edit_application' application.application_id %}" method="get" style="margin: 0;">
+                        <button class="w3-button w3-blue" type="submit">Edit</button>
                     </form>
-                    <form action="{% url 'delete_application' application.application_id %}" method="post" style="display: inline;">
+                    <form action="{% url 'delete_application' application.application_id %}" method="post" style="margin: 0;">
                         {% csrf_token %}
                         <button class="w3-button w3-red" type="submit">Delete</button>
                     </form>
                 </div>
             </li>
         {% empty %}
-            <p>No pending applications.</p>
+            <li class="w3-card-4 w3-margin w3-padding">
+                <p style="text-align: center; color: grey;">No pending applications.</p>
+            </li>
         {% endfor %}
     </ul>
     <br>
-    <a href="{% url 'employee_profile' %}" class="w3-button w3-orange">Back to Profile</a>
 </div>
 
 {% endblock %}
