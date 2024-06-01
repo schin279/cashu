@@ -2,59 +2,81 @@
 
 {% block content %}
 <style>
-    .custom-button {
+    .util-button {
         background-color: #FF7518;
         color: #fff;
         border: none;
         padding: 12px 24px;
         font-size: 16px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 30px;
         transition: background-color 0.3s ease;
         text-decoration: none;
         display: inline-block;
     }
-    .custom-button:hover {
+    .util-button:hover {
         background-color: #8B4000;
     }
-    .delete-button {
+    .edit-button {
         background-color: #FF4433;
         color: #fff;
         border: none;
         padding: 12px 24px;
         font-size: 16px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 30px;
         transition: background-color 0.3s ease;
         text-decoration: none;
         display: inline-block;
     }
-    .delete-button:hover {
+    .edit-button:hover {
         background-color: #C04000;
+    }
+    .job-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px;
+    }
+    .job-details {
+        display: flex;
+        flex-direction: column;
+    }
+    .job-details h3 {
+        margin: 0;
+        font-size: 1.5em;
+    }
+    .job-details p {
+        margin: 5px 0;
+        color: grey;
+    }
+    .button-container {
+        display: flex;
+        gap: 10px;
     }
 </style>
 <div class="w3-container w3-content" style="max-width:1400px; margin-top:80px">
-    <h2>Job Listings</h2>
-    <ul class="w3-ul w3-card-4">
+    <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Job Listings</h2>
+    <ul class="w3-ul">
         {% for job in jobs_posted %}
-        <li class="w3-bar">
-            <div class="w3-bar-item" style="width: 80%;">
-                <span class ="w3-large">{{ job.title }}</span><br>
-                <span>Date posted: {{ job.date_posted }}</span><br><br>
-                <form action="{% url 'view_applications' job.job_id %}" method="get" style="display: inline;">
-                    <button class="custom-button" type="submit">View Applicants</button>
-                </form>
+        <li class="w3-card-4 w3-margin job-list-item">
+            <div class="job-details">
+                <h3>{{ job.title }}</h3>
+                <p>Date posted: {{ job.date_posted }}</p>
             </div>
-            <div class="w3-bar-item" style="width: 20%; text-align: right;">
-                <form action="{% url 'edit_job' job.job_id %}" method="get" style="display: inline;">
-                    <button class="custom-button" type="submit">Edit</button>
+            <div class="button-container">
+                <form action="{% url 'edit_job' job.job_id %}" method="get">
+                    <button class="edit-button" type="submit">Edit</button>
                 </form>
-                <form action="{% url 'delete_job' job.job_id %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button class="delete-button" type="submit">Delete</button>
+                <form action="{% url 'view_applications' job.job_id %}" method="get">
+                    <button class="util-button" type="submit">View Applicants</button>
                 </form>
             </div>
         </li>
+        {% empty %}
+            <li class="w3-card-4 w3-margin w3-padding">
+                <p style="text-align: center; color: grey;">No jobs posted yet.</p>
+            </li>
         {% endfor %}
     </ul>
 </div>
