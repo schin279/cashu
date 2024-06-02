@@ -1,6 +1,86 @@
 {% extends 'base/navbar.html' %}
 
 {% block content %}
+
+<style>
+    .button-container {
+        display: flex;
+        gap: 10px;
+    }
+    .util-button {
+        background-color: #FF7518;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .util-button:hover {
+        background-color: #8B4000;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        text-align: center;
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .rating {
+        unicode-bidi: bidi-override;
+        direction: ltr; /* Change direction to left-to-right */
+    }
+    .rating > .star {
+        display: inline-block;
+        position: relative;
+        width: 1.1em;
+        font-size: 3em;
+        color: #ccc;
+        cursor: pointer;
+    }
+    .rating > .star:hover:before,
+    .rating > .star:hover ~ .star:before,
+    .rating > .star:hover ~ #ratingValue {
+        content: "\2605";
+        position: absolute;
+    }
+    .rating > .star:hover,
+    .rating > .star.selected {
+        color: #FF7518; /* Orange color when hovered over or selected */
+    }
+</style>
+
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
     <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Active Jobs</h2>
     <ul class="w3-ul">
@@ -12,6 +92,11 @@
                     <br>
                     <span style="color: {% if job.get_status == 'Completed' %}green{% else %}orange{% endif %};">{{ job.get_status }}</span>
                 </div>
+                <div class="button-container">
+                    {% if job.get_status == 'Completed' %}
+                        <button class="util-button" onclick="openRatingModal('{{ job.job_id }}')">Rate</button>
+                    {% endif %}
+                </div>
             </li>
         {% empty %}
             <li class="w3-card-4 w3-margin w3-padding">
@@ -20,5 +105,88 @@
         {% endfor %}
     </ul>
 </div>
+
+<div id="ratingModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>How would you rate the engagement?</h2>
+        <form id="ratingForm" method="post">
+            {% csrf_token %}
+            <div class="rating" id="ratingStars">
+                <span class="star" data-rating="5">&#9733;</span>
+                <span class="star" data-rating="4">&#9733;</span>
+                <span class="star" data-rating="3">&#9733;</span>
+                <span class="star" data-rating="2">&#9733;</span>
+                <span class="star" data-rating="1">&#9733;</span>
+            </div>
+            <input type="hidden" name="rating" id="ratingValue" value="5" />
+            <br>
+            <textarea name="feedback" placeholder="Write a review..." ></textarea><br>
+            <button class="util-button" type="submit">Submit Rating</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openRatingModal(jobId) {
+        var modal = document.getElementById('ratingModal');
+        modal.style.display = "block";
+
+        var form = document.getElementById('ratingForm');
+        form.action = "/rate/" + jobId + "/";
+
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var stars = document.querySelectorAll(".star");
+
+        stars.forEach(function(star, index) {
+            star.addEventListener("mouseover", function() {
+                var rating = this.getAttribute("data-rating");
+
+                // Highlight the hovered star and all the previous stars
+                for (var i = 0; i <= index; i++) {
+                    stars[i].classList.add("selected");
+                }
+
+                // Unhighlight all the stars after the hovered star
+                for (var j = index + 1; j < stars.length; j++) {
+                    stars[j].classList.remove("selected");
+                }
+
+                // Set the value of the hidden input field to the rating of the hovered star
+                document.getElementById("ratingValue").value = rating;
+            });
+
+            // Keep the stars highlighted after click
+            star.addEventListener("click", function() {
+                var rating = this.getAttribute("data-rating");
+
+                // Remove event listeners from stars to prevent further changes
+                stars.forEach(function(s) {
+                    s.removeEventListener("mouseover", null);
+                });
+
+                // Highlight all stars up to the clicked one
+                for (var i = 0; i <= index; i++) {
+                    stars[i].classList.add("selected");
+                }
+
+                // Set the value of the hidden input field to the rating of the clicked star
+                document.getElementById("ratingValue").value = rating;
+            });
+        });
+    });
+</script>
 
 {% endblock %}
