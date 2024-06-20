@@ -2,23 +2,59 @@
 
 {% block content %}
 
+<style>
+    .util-button {
+        background-color: #FF7518;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .util-button:hover {
+        background-color: #8B4000;
+    }
+    .button-container {
+        display: flex;
+        gap: 10px;
+    }
+    .employee-link {
+        text-decoration: none;
+        color: #FF7518;
+        cursor: pointer;
+    }
+    .employee-link:hover {
+        color: #8B4000;
+    }
+</style>
+
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    <h3>Applicants</h3>
-    <ul class="w3-ul w3-card-4">
+    <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Applicants</h2>
+    <ul class="w3-ul">
         {% for application in applications %}
             {% if application.status != 'Accepted' and application.status != 'Rejected' %}
-                <li class="w3-bar">
-                    Name: {{ application.applicant.username }}<br>
-                    Date applied: {{ application.date_applied }} <br>
-                    <a href="{% url 'review_application' application.application_id %}" class="w3-button w3-orange">View Details</a>
+                <li class="w3-card-4 w3-margin w3-padding" style="display: flex; align-items: center;">
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0; font-size: 1.5em;"><a href={% url 'view_employee_profile' application.applicant.username %} class="employee-link">{{ application.applicant.username }}</a></h3>
+                        <p style="margin: 5px 0; color: grey;">Date applied: {{ application.date_applied }}</p>
+                    </div>
+                    <div class="button-container">
+                        <form action="{% url 'review_application' application.application_id %}" method="get">
+                            <button class="util-button" type="submit" >View Details</button>
+                        </form>
+                    </div>
                 </li>
             {% endif %}
         {% empty %}
-            <li>No pending applicants.</li>
+            <li class="w3-card-4 w3-margin w3-padding">
+                <p style="text-align: center; color: grey;">No pending applicants.</p>
+            </li>
         {% endfor %}
     </ul>
-    <br>
-    <a href="{% url 'employer_jobs' %}" class="w3-button w3-blue">Back</a>
 </div>
 
 {% endblock %}

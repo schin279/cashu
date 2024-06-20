@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html>
-    
+{% extends 'base/navbar.html' %}
+
+{% block content %}
 <head>
 	<title>Signup</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -13,23 +13,19 @@
 			margin: 0;
 			padding: 0;
 			height: 100%;
-			background: #F3EFE3;
+			background: #ffffff;
 		}
 		.user_card {
 			width: 350px;
 			margin-top: auto;
 			margin-bottom: auto;
-			background: #F4EEE0;
+			background: #ffffff;
 			position: relative;
 			display: flex;
 			justify-content: center;
 			flex-direction: column;
 			padding: 10px;
-			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 			border-radius: 5px;
-
 		}
 
 		.form_container {
@@ -37,12 +33,13 @@
 		}
 
 		#form-title{
-			color: #FF7518;
+			color: #333;
 		}
 		.login_btn {
 			width: 100%;
 			background: #FF7518;
 			color: white;
+			border-radius: 30px;
 		}
 		.login_btn:focus {
 			box-shadow: none;
@@ -71,7 +68,7 @@
 		<div class="d-flex justify-content-center h-100">
 			<div class="user_card">
 				<div class="d-flex justify-content-center">
-					<h3 id="form-title">REGISTER ACCOUNT</h3>
+					<h3 id="form-title">Sign up to Cashu</h3>
 				</div>
 				<div class="d-flex justify-content-center form_container">
     
@@ -112,7 +109,7 @@
 							<div class="input-group-append">
 								<span class = "input-group-text"><i class="fas fa-user-tie"></i></span>
 							</div>
-							<select name="role" class="form-control">
+							<select name="role" id="id_role" class="form-control">
 								<option value="employee">Employee</option>
 								<option value="employer">Employer</option>
 							</select>
@@ -123,13 +120,13 @@
 								<div class="input-group-append">
 									<span class="input-group-text"><i class="fas fa-id-card"></i></span>
 								</div>
-								{{ form.first_name }}
+								{{ form.employee_first_name }}
 							</div>
 							<div class="input-group mb-3">
 								<div class="input-group-append">
 									<span class="input-group-text"><i class="fas fa-id-card"></i></span>
 								</div>
-								{{ form.last_name }}
+								{{ form.employee_last_name }}
 							</div>
 							<p style="font-size: 0.8em; color: #6c757d;">Date of Birth:</p>
 							<div class="input-group mb-3">
@@ -142,16 +139,53 @@
 								<div class="input-group-append">
 									<span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
 								</div>
-								{{ form.location }}
+								{{ form.employee_location }}
 							</div>
 						</div>		
-
+						<div id="employer_fields">
+							<div class="input-group mb-3">
+								<div class="input-group-append">
+									<span class="input-group-text"><i class="fas fa-id-card"></i></span>
+								</div>
+								{{ form.employer_first_name }}
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-append">
+									<span class="input-group-text"><i class="fas fa-id-card"></i></span>
+								</div>
+								{{ form.employer_last_name }}
+							</div>
+							<p style="font-size: 0.8em; color: #6c757d;">Date of Birth:</p>
+							<div class="input-group mb-3">
+								<div class="input-group-append">
+									<span class="input-group-text"><i class="fas fa-building"></i></span>
+								</div>
+								{{ form.company }}
+							</div>
+							<div class="input-group mb-3">
+								<div class="input-group-append">
+									<span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+								</div>
+								{{ form.employer_location }}
+							</div>
+						</div>
+						{% if form.non_field_errors %}
+							<div class="alert alert-danger" role="alert">
+								{{ form.non_field_errors }}
+							</div>
+						{% endif %}
+						{% for field in form %}
+							{% if field.errors %}
+								<div class="alert alert-danger" role="alert">
+									{{ field.errors }}
+								</div>
+							{% endif %}
+						{% endfor %}
 				   		<div class="d-flex justify-content-center mt-3 login_container">
 				 			<input class="btn login_btn" type="submit" value="Register Account">
 				   		</div>
 					</form>
 				</div>
-                {{form.errors}}
 				<div class="mt-4">
 					<div class="d-flex justify-content-center links">
 						Already have an account? <a href="{% url 'login' %}" class="ml-2">Login</a>
@@ -170,29 +204,40 @@
 		form_fields[5].placeholder='First Name..';
 		form_fields[6].placeholder='Last Name..';
 		form_fields[8].placeholder='Location..';
+		form_fields[9].placeholder='First Name..';
+		form_fields[10].placeholder='Last Name..';
+		form_fields[11].placeholder='Company..';
+		form_fields[12].placeholder='Location..';
 
 		for (var field in form_fields){	
 			form_fields[field].className += ' form-control'
 		}
 
 		// shows or hides employee profile fields based on role selection
-		document.getElementsById('id_role').addEventListener('change', function() {
-			var employeeFields = document.getElementsById('employee_fields');
+		document.getElementById('id_role').addEventListener('change', function() {
+			var employeeFields = document.getElementById('employee_fields');
+			var employerFields = document.getElementById('employer_fields');
 			if (this.value === 'employee') {
 				employeeFields.style.display = 'block';
-			} else {
+				employerFields.style.display = 'none';
+			} else if (this.value === 'employer') {
 				employeeFields.style.display = 'none';
+				employerFields.style.display = 'block';
 			}
 		});
 
 		window.onload = function() {
-			var employeeFields = document.getElementsById('employee_fields');
-			if (document.getElementsById('id_role').value === 'employee') {
+			var employeeFields = document.getElementById('employee_fields');
+			var employerFields = document.getElementById('employer_fields');
+			if (document.getElementById('id_role').value === 'employee') {
 				employeeFields.style.display = 'block';
-			} else {
+				employerFields.style.display = 'none';
+			} else if (document.getElementById('id_role').value === 'employer') {
 				employeeFields.style.display = 'none';
+				employerFields.style.display = 'block';
 			}
 		};
 	</script>
 </body>
-</html>
+
+{% endblock %}

@@ -2,23 +2,107 @@
 
 {% block content %}
 
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
-    <h2>Application Details</h2>
-    <p>Name: {{ application.applicant.username }}</p>
-    <p>Cover Letter: {{ application.cover_letter }}</p>
-    <p>Resume: <a href="{{ application.resume.url }}" target="_blank">Download Resume</a></p>
+<style>
+    .applicant-details {
+        display: flex;
+        flex-direction: column;
+    }
+    .applicant-details h3 {
+        margin: 0;
+        font-size: 1.5em;
+    }
+    .applicant-details p {
+        margin: 5px 0;
+        color: black;
+    }
+    .employee-link {
+        text-decoration: none;
+        color: #FF7518;
+        cursor: pointer;
+    }
+    .employee-link:hover {
+        color: #8B4000;
+    }
+    .action-button {
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        margin: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .action-button.accept {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .action-button.accept:hover {
+        background-color: #45a049;
+    }
+    .action-button.reject {
+        background-color: #f44336;
+        color: white;
+    }
+    .action-button.reject:hover {
+        background-color: #d32f2f;
+    }
+    .action-button.cancel {
+        background-color: #ddd;
+        color: #333;
+        text-decoration: none;
+    }
+    .action-button.cancel:hover {
+        background-color: #bbb;
+    }
+    .resume-link {
+        text-decoration: none;
+        color: #346ADB;
+        display: block;
+        margin-top: 5px;
+        text-align: center;
+    }
+    .resume-link:hover {
+        color: #1D3C7E;
+    }
+    .message-box {
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin-bottom: 20px;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
 
-    <form action={% url 'accept_application' application.application_id %} method="post" style="display: inline;">
-        {% csrf_token %}
-        <button class="w3-button w3-green" type="submit">Accept</button>
-    </form>
-    <form action={% url 'reject_application' application.application_id %} method="post" style="display: inline;">
-        {% csrf_token %}
-        <button class="w3-button w3-red" type="submit">Reject</button>
-    </form>
-    <br>
-    <br>
-    <a href="{% url 'view_applications' application.job.job_id %}" class="w3-button w3-grey">Cancel</a>
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+    <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Application Details</h2>
+    <ul class="w3-ul">
+        <li class="w3-card-4 w3-margin application-item">
+            <div class="applicant-details" style="text-align: center; margin-bottom: 20px;">
+                <h3><a href={% url 'view_employee_profile' application.applicant.username %} class="employee-link">{{ application.applicant.username }}</a></h3>
+                <br>
+                <p>Cover Letter:</p>
+                <div class="message-box">
+                    <p>{{ application.cover_letter }}</p>
+                </div>
+                <p>Resume: <a href="{{ application.resume.url }}" target="_blank" class="resume-link">Download Resume</a></p>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center;">
+                <form action={% url 'accept_application' application.application_id %} method="post" style="margin-right: 10px;">
+                    {% csrf_token %}
+                    <button class="action-button accept" type="submit">Accept</button>
+                </form>
+                <form action={% url 'reject_application' application.application_id %} method="post" style="margin-left: 10px;">
+                    {% csrf_token %}
+                    <button class="action-button reject" type="submit">Reject</button>
+                </form>
+            </div>           
+            <div style="text-align: center; display: flex; justify-content: center;">
+                <a href="{% url 'view_applications' application.job.job_id %}" class="action-button cancel">Cancel</a>
+            </div>
+        </li>
+    </ul>
 </div>
 
 {% endblock %}

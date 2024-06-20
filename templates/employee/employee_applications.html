@@ -1,5 +1,13 @@
 {% extends 'base/navbar.html' %}
 
+<style>
+    .status-container {
+        display: flex;
+        gap: 10px;
+        margin-left: 10px;
+    }
+</style>
+
 {% block content %}
 
 <div class="w3-container w3-content" style="max-width:1400px; margin-top:80px;">
@@ -9,16 +17,17 @@
             <li class="w3-card-4 w3-margin w3-padding" style="display: flex; align-items: center;">
                 <div style="flex: 1;">
                     <h3 style="margin: 0; font-size: 1.5em;">{{ application.job.title }}</h3>
+                    <p style="margin: 5px 0; color: grey;">Employer: {{ application.job.employer }}</p>
                     <p style="margin: 5px 0; color: grey;">Date applied: {{ application.date_applied }}</p>
                 </div>
-                <div style="flex-shrink: 0; display: flex; gap: 10px;">
-                    <form action="{% url 'edit_application' application.application_id %}" method="get" style="margin: 0;">
-                        <button class="w3-button w3-blue" type="submit">Edit</button>
-                    </form>
-                    <form action="{% url 'delete_application' application.application_id %}" method="post" style="margin: 0;">
-                        {% csrf_token %}
-                        <button class="w3-button w3-red" type="submit">Delete</button>
-                    </form>
+                <div class="status-container">
+                    {% if application.status == 'Accepted' %}
+                        <span style="color: green">Accepted</span>
+                    {% elif application.status == 'Rejected' %}
+                        <span style="color: red">Rejected</span>
+                    {% else %}
+                        <span style="color: grey">Pending</span>
+                    {% endif %}
                 </div>
             </li>
         {% empty %}

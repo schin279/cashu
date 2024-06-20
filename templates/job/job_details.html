@@ -46,7 +46,7 @@
         padding: 12px 24px;
         font-size: 16px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 30px;
         transition: background-color 0.3s ease;
         text-decoration: none;
         display: inline-block;
@@ -59,10 +59,18 @@
         display: block;
         margin-top: 10px;
     }
+    .employer-link {
+        text-decoration: none;
+        color: #FF7518;
+        cursor: pointer;
+    }
+    .employer-link:hover {
+        color: #8B4000;
+    }
 </style>
 <div class="job-detail-container">
     <div class="job-title">{{ job.title }}</div>
-    <div class="job-company">Posted by {{ job.employer }}</div>
+    <div class="job-company">Posted by <a href={% url 'view_employer_profile' job.employer.username %} class="employer-link">{{ job.employer }}</a></div>
     <div class="job-description"><b>Description:</b><br>{{ job.description }}</div>
     <div class="job-requirements"><b>Requirements:</b> <br>{{ job.requirements }}</div>
     {% if job.attachment %}
@@ -72,7 +80,7 @@
     <div class="job-details">
         <span class="detail-label">Location:</span> {{ job.location }}<br>
         <span class="detail-label">Job Type:</span> {{ job.category }}<br>
-        <span class="detail-label">Pay Rate:</span> {{ job.pay_rate }} per hour<br>
+        <span class="detail-label">Pay Rate:</span> ${{ job.pay_rate }} per hour<br>
         <span class="detail-label">Posted:</span> {{ job.date_posted|date:"d M Y" }}
     </div>
     {% if not user.is_authenticated %}

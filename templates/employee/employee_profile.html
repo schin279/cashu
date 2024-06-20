@@ -75,34 +75,15 @@
         margin: 5px 0;
         color: #555;
     }
-
-    .dashboard-link {
-        display: inline-block;
-        padding: 10px 15px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #fff;
-        background-color: #FF7518;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: background-color 0.3s;
-        margin-top: 20px;
-    }
-
-    .dashboard-link:hover {
-        background-color: #8B4000;
-    }
 </style>
 
 <div class="profile-container">
     <div class="profile-header">
-        <h2>{{ user.username }}'s Profile</h2>
     </div>
     <div class="profile-details">
         <div class="detail-item">
             <h4>Name</h4>
-            <p>{{ employee.first_name}} {{ employee.last_name }}</p>
+            <p>{{ employee.employee_profile.first_name}} {{ employee.employee_profile.last_name }}</p>
         </div>
         <div class="detail-item">
             <h4>Date of Birth</h4>
@@ -114,18 +95,18 @@
         </div>
         <div class="detail-item">
             <h4>Email</h4>
-            <p>{{ user.email }}</p>
+            <p>{{ employee.email }}</p>
         </div>
     </div>
     <h3>Reviews</h3>
     <div class="reviews-container">
-        {% for job in completed_jobs %}
-            {% if job.rating %}
+        {% for job in jobs_done %}
+            {% if job.employee_rating %}
                 <div class="review-item">
                     <strong>{{ job.employer.username }}</strong>
                     <p><strong>Job:</strong> {{ job.title }}</p>
-                    <p><strong>Rating:</strong> {{ job.rating }}/5</p>
-                    <p><strong>Comments:</strong> {{ job.feedback }}</p>
+                    <p><strong>Rating:</strong> {{ job.employee_rating }}/5</p>
+                    <p><strong>Comments:</strong> {{ job.employee_feedback }}</p>
                 </div>
             {% endif %}
         {% empty %}

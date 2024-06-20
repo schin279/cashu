@@ -55,7 +55,7 @@
         padding: 12px 24px;
         font-size: 16px;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 30px;
         transition: background-color 0.3s ease;
         text-decoration: none;
         display: inline-block;
@@ -63,6 +63,14 @@
     }
     .apply-button:hover {
         background-color: #8B4000;
+    }
+    .employer-link {
+        text-decoration: none;
+        color: #FF7518;
+        cursor: pointer;
+    }
+    .employer-link:hover {
+        color: #8B4000;
     }
 </style>
 
@@ -80,9 +88,9 @@
                         <div class="job-details">
                             <p><strong>Description:</strong> {{ job.description }}</p>
                             <p><strong>Required Skill(s):</strong> {{ job.requirements }}</p>
-                            <p><strong>Rate:</strong> {{ job.pay_rate }}/hr</p>
+                            <p><strong>Rate:</strong> ${{ job.pay_rate }}/hr</p>
                             <p><strong>Date posted:</strong> {{ job.date_posted }}</p>
-                            <p><strong>Posted by:</strong> {{ job.employer }}</p>
+                            <p><strong>Posted by: </strong><a href="{% url 'view_employer_profile' job.employer.username %}" class="employer-link">{{ job.employer }}</a></p>
                         </div>
 
                         {% if is_employee %}

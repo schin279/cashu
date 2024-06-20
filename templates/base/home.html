@@ -83,7 +83,7 @@
         background-color: #FF7518;
         color: white;
         padding: 10px 20px;
-        border-radius: 5px;
+        border-radius: 30px;
         text-decoration: none;
         transition: background-color 0.3s ease;
     }
@@ -101,31 +101,46 @@
 <div class="recent-jobs">
     {% if is_employer %}
         <h2 style="color: #333; text-align: center; margin-bottom: 20px;">Your Job Listings</h2>
-    {% else %}
-        <h2 style="color: #333; text-align: center; margin-bottom: 20px;">Recent Jobs</h2>
-    {% endif %}
-    <div class="job-cards-container">
-        {% if jobs %}
-            {% for job in jobs %}
-                <a href="{% url 'job_details' job.job_id %}" class="job-card">
-                    <div class="job-info">
-                        <div>
-                            <div class="job-title">{{ job.title }}</div>
-                            <div class="job-employer">Posted by {{ job.employer }}</div>
-                            <div class="job-location">Location: {{ job.location }}</div>
-                            <div class="job-date">Posted: {{ job.date_posted|date:"d M Y" }}</div>
+        <div class="job-cards-container">
+            {% if job_listings %}
+                {% for job in job_listings %}
+                    <a href="{% url 'job_details' job.job_id %}" class="job-card">
+                        <div class="job-info">
+                            <div>
+                                <div class="job-title">{{job.title}}</div>
+                                <div class="job-employer">Posted by {{job.employer}}</div>
+                                <div class="job-location">Location: {{job.location}}</div>
+                                <div class="job-date">Posted: {{job.date_posted|date:"d M Y"}}</div>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            {% endfor %}
-        {% else %}
-            <p class="no-jobs">No jobs found.</p>
-        {% endif %}
-    </div>
-
-    {% if is_employer %}
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p class="no-jobs">You have not posted any jobs yet.</p>
+            {% endif %}
+        </div>
         <div class="post-job-button">
             <a href="{% url 'post_job' %}">Post a New Job</a>
+        </div>
+    {% else %}
+        <h2 style="color: #333; text-align: center; margin-bottom: 20px;">Recent Jobs</h2>
+        <div class="job-cards-container">
+            {% if recent_jobs %}
+                {% for job in recent_jobs %}
+                    <a href="{% url 'job_details' job.job_id %}" class="job-card">
+                        <div class="job-info">
+                            <div>
+                                <div class="job-title">{{ job.title }}</div>
+                                <div class="job-employer">Posted by {{ job.employer }}</div>
+                                <div class="job-location">Location: {{ job.location }}</div>
+                                <div class="job-date">Posted: {{ job.date_posted|date:"d M Y" }}</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p class="no-jobs">No jobs found.</p>
+            {% endif %}
         </div>
     {% endif %}
 </div>

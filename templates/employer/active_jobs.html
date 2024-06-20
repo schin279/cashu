@@ -38,7 +38,7 @@
     .modal-content {
         text-align: center;
         background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
+        margin: 15% auto;
         padding: 20px;
         border: 1px solid #888;
         width: 80%;
@@ -59,7 +59,7 @@
     }
     .rating {
         unicode-bidi: bidi-override;
-        direction: ltr; /* Change direction to left-to-right */
+        direction: ltr;
     }
     .rating > .star {
         display: inline-block;
@@ -77,7 +77,7 @@
     }
     .rating > .star:hover,
     .rating > .star.selected {
-        color: #FF7518; /* Orange color when hovered over or selected */
+        color: #FF7518;
     }
 </style>
 
@@ -89,7 +89,6 @@
                 <div style="flex: 1;">
                     <h3 style="margin: 0; font-size: 1.5em;">{{ job.title }}</h3>
                     <p style="margin: 5px 0; color: grey;">Employee: {{ job.employee.username }}</p>
-                    <br>
                     <span style="color: {% if job.get_status == 'Completed' %}green{% else %}orange{% endif %};">{{ job.get_status }}</span>
                 </div>
                 <div class="button-container">
@@ -113,11 +112,11 @@
         <form id="ratingForm" method="post">
             {% csrf_token %}
             <div class="rating" id="ratingStars">
-                <span class="star" data-rating="5">&#9733;</span>
-                <span class="star" data-rating="4">&#9733;</span>
-                <span class="star" data-rating="3">&#9733;</span>
-                <span class="star" data-rating="2">&#9733;</span>
                 <span class="star" data-rating="1">&#9733;</span>
+                <span class="star" data-rating="2">&#9733;</span>
+                <span class="star" data-rating="3">&#9733;</span>
+                <span class="star" data-rating="4">&#9733;</span>
+                <span class="star" data-rating="5">&#9733;</span>
             </div>
             <input type="hidden" name="rating" id="ratingValue" value="5" />
             <br>
@@ -127,13 +126,17 @@
     </div>
 </div>
 
+<div id="ratingSubmittedPopup" style="text-align: center; display: none; background-color: #ffffff; border: 1px solid #ccc; padding: 10px; position: fixed; bottom: 20px; right: 20px; z-index: 999;">
+    Rating submitted!
+</div>
+
 <script>
     function openRatingModal(jobId) {
         var modal = document.getElementById('ratingModal');
         modal.style.display = "block";
 
         var form = document.getElementById('ratingForm');
-        form.action = "/rate/" + jobId + "/";
+        form.action = jobId + "/complete/";
 
         var span = document.getElementsByClassName("close")[0];
         span.onclick = function() {
@@ -151,41 +154,58 @@
         var stars = document.querySelectorAll(".star");
 
         stars.forEach(function(star, index) {
-            star.addEventListener("mouseover", function() {
-                var rating = this.getAttribute("data-rating");
-
-                // Highlight the hovered star and all the previous stars
-                for (var i = 0; i <= index; i++) {
-                    stars[i].classList.add("selected");
-                }
-
-                // Unhighlight all the stars after the hovered star
-                for (var j = index + 1; j < stars.length; j++) {
-                    stars[j].classList.remove("selected");
-                }
-
-                // Set the value of the hidden input field to the rating of the hovered star
-                document.getElementById("ratingValue").value = rating;
-            });
-
-            // Keep the stars highlighted after click
-            star.addEventListener("click", function() {
-                var rating = this.getAttribute("data-rating");
-
-                // Remove event listeners from stars to prevent further changes
-                stars.forEach(function(s) {
-                    s.removeEventListener("mouseover", null);
-                });
-
-                // Highlight all stars up to the clicked one
-                for (var i = 0; i <= index; i++) {
-                    stars[i].classList.add("selected");
-                }
-
-                // Set the value of the hidden input field to the rating of the clicked star
-                document.getElementById("ratingValue").value = rating;
-            });
+            star.addEventListener("mouseover", handleMouseOver);
+            star.addEventListener("mouseout", handleMouseOut);
+            star.addEventListener("click", handleClick);
         });
+
+        function handleMouseOver() {
+            var rating = this.getAttribute("data-rating");
+
+            // Highlight the hovered star and all the previous stars
+            for (var i = 0; i < rating; i++) {
+                stars[i].classList.add("selected");
+            }
+
+            // Unhighlight all the stars after the hovered star
+            for (var j = rating; j < stars.length; j++) {
+                stars[j].classList.remove("selected");
+            }
+        }
+
+        function handleMouseOut() {
+            var currentRating = document.getElementById("ratingValue").value;
+
+            // Reset the stars to the current rating value
+            for (var i = 0; i < stars.length; i++) {
+                if (i < currentRating) {
+                    stars[i].classList.add("selected");
+                } else {
+                    stars[i].classList.remove("selected");
+                }
+            }
+        }
+
+        function handleClick() {
+            var rating = this.getAttribute("data-rating");
+
+            // Set the value of the hidden input field to the rating of the clicked star
+            document.getElementById("ratingValue").value = rating;
+
+            // Show the rating submitted popup
+            var ratingSubmittedPopup = document.getElementById("ratingSubmittedPopup");
+            ratingSubmittedPopup.style.display = "block";
+            setTimeout(function() {
+                ratingSubmittedPopup.style.display = "none";
+            }, 2000);
+
+            // Remove event listeners from stars to prevent further changes
+            stars.forEach(function(star) {
+                star.removeEventListener("mouseover", handleMouseOver);
+                star.removeEventListener("mouseout", handleMouseOut);
+                star.removeEventListener("click", handleClick);
+            });
+        }
     });
 </script>
 

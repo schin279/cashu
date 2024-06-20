@@ -1,122 +1,142 @@
-<!DOCTYPE html>
-<html>
-    
-<head>
-	<title>Login</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+{% extends 'base/navbar.html' %}
 
-	<style>
-		body,
-		html {
-			margin: 0;
-			padding: 0;
-			height: 100%;
-			background: #F3EFE3;
-		}
-		.user_card {
-			width: 350px;
-			margin-top: auto;
-			margin-bottom: auto;
-			background: #F4EEE0;
-			position: relative;
+{% block content %}
+
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #form-title {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .login_btn {
+            width: 100%;
+            background: #FF7518;
+            color: white;
+            border-radius: 30px;
+        }
+        .login_btn:focus {
+            box-shadow: none;
+            outline: 0px;
+        }
+        .input-group-text {
+            background: #FF7518;
+            color: white;
+            border-radius: 0.25rem 0 0 0.;
+        }
+        .input_user, .input_pass:focus {
+            box-shadow: none;
+            outline: 0px;
+        }
+        .links a {
+            color: #007bff;
+        }
+        #messages {
+            background-color: grey;
+            color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .social-login-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .social-btn {
+            width: 90%;
 			display: flex;
-			justify-content: center;
-			flex-direction: column;
-			padding: 10px;
-			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-			border-radius: 5px;
-
-		}
-
-		.form_container {
-			margin-top: 20px;
-		}
-
-		#form-title{
-			color: #FF7518;
-		}
-
-		.login_btn {
-			width: 100%;
-			background: #FF7518;
-			color: white;
-		}
-		.login_btn:focus {
-			box-shadow: none;
-			outline: 0px;
-		}
-		.login_container {
-			padding: 0 2rem;
-		}
-		.input-group-text {
-			background: #FF7518;
-			color: white;
-			border: 0;
-			border-radius: 0.25rem 0 0 0.25rem;
-		}
-		.input_user,
-		.input_pass:focus {
-			box-shadow: none;
-			outline: 0px;
-		}
-
-		#messages{
-			background-color: grey;
-			color: #fff;
-			padding: 10px;
-			margin-top: 10px;
-		}
-	</style>
-
-</head>
+			align-items: center;
+            text-align: left;
+            padding: 10px;
+            border-radius: 30px;
+			border-color: #DAA06D;
+            color: black;
+            font-size: 14px;
+            font-weight: bold;
+			text-decoration: none;
+        }
+		.social-btn img {
+			margin-left: 10px;
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
 <body>
-	<div class="container h-100">
-		<div class="d-flex justify-content-center h-100">
-			<div class="user_card">
-				<div class="d-flex justify-content-center">
-
-					<h3 id="form-title">LOGIN</h3>
-				</div>
-				<div class="d-flex justify-content-center form_container">
-					<form method="POST" action="">
-                        {% csrf_token %}
-						<div class="input-group mb-3">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="fas fa-user"></i></span>
-							</div>
-							<input type="text" name="username" placeholder="Username..." class="form-control">
-						</div>
-						<div class="input-group mb-2">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="fas fa-key"></i></span>
-							</div>
-								<input type="password" name="password" placeholder="Password..." class="form-control" >
-						</div>
-						<div class="d-flex justify-content-center links">
-							<a href="{% url 'reset_password' %}" class="ml-2">Forgot password?</a>
-						</div>
-
-							<div class="d-flex justify-content-center mt-3 login_container">
-				 				<input class="btn login_btn" type="submit" value="Login">
-				   			</div>
-					</form>
-
-				</div>
-                {% for message in messages %}
-                    <p id="messages">{{message}}</p>
-                {% endfor %}
-				<div class="mt-4">
-					<div class="d-flex justify-content-center links">
-						Don't have an account? <a href="{% url 'signup' %}" class="ml-2">Sign Up</a>
-					</div>
-				</div>
+    <div class="container">
+        <div>
+            <div class="d-flex justify-content-center">
+                <h3 id="form-title">Login to your account</h3>
+            </div>
+            <div class="d-flex justify-content-center form_container">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input type="text" name="username" placeholder="Username" class="form-control">
+                    </div>
+                    <div class="input-group mb-2">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        </div>
+                        <input type="password" name="password" placeholder="Password" class="form-control">
+                    </div>
+                    <div class="d-flex justify-content-center links">
+                        <a href="{% url 'reset_password' %}" class="ml-2">Forgot password?</a>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3 login_container">
+                        <input class="btn login_btn" type="submit" value="Continue">
+                    </div>
+                </form>
+            </div>
+			<div class="mt-4">
+                <div class="d-flex justify-content-center links">
+                    Don't have an account? <a href="{% url 'signup' %}" class="ml-2">Sign Up</a>
+                </div>
+            </div>
+            {% for message in messages %}
+                <p id="messages">{{ message }}</p>
+            {% endfor %}
+            <div class="d-flex justify-content-center mt-3">
+                <span>or</span>
 			</div>
-		</div>
-	</div>
+            <div class="social-login-buttons justify-content-center">
+                <a href="#" class="btn social-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo">Login with Google
+                </a>
+            </div>
+            <div class="social-login-buttons justify-content-center">
+                <a href="#" class="btn social-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo">Login with Facebook
+                </a>
+            </div>
+            <div class="social-login-buttons justify-content-center">
+                <a href="#" class="btn social-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Logo">Login with Apple
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 
-</html>
+{% endblock %}
