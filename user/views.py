@@ -8,18 +8,21 @@ from django.contrib.auth.decorators import login_required
 from job.models import Job
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from profiles.models import Employee_profile
+from profiles.models import Employee_profile, Employer_profile
 
 # Create your views here.
 def home(request):
-    jobs = Job.objects.filter(is_deleted=False)
-    is_employee = request.user.groups.filter(name='employee').exists()
-    is_employer = request.user.groups.filter(name='employer').exists()
+    jobs = Job.objects.filter(is_deleted=False, vacancies__gt=0)
+    is_employee = request.user.is_authenticated and request.user.groups.filter(name='employee').exists()
+    is_employer = request.user.is_authenticated and request.user.groups.filter(name='employer').exists()
 
-    job_listings = Job.objects.filter(employer=request.user, is_deleted=False)
+    job_listings = Job.objects.none()
+    
+    if request.user.is_authenticated and is_employer:
+        job_listings = Job.objects.filter(employer=request.user, is_deleted=False, vacancies__gt=0)
     
     # displays 5 most recent jobs
-    recent_jobs = Job.objects.filter(is_deleted=False).order_by('-date_posted')[:5]
+    recent_jobs = Job.objects.filter(is_deleted=False, vacancies__gt=0).order_by('-date_posted')[:5]
     
     # checks for already applied jobs (employees)
     applied_jobs = request.user.application_set.all().values_list('job_id', flat=True) if request.user.is_authenticated else []
@@ -43,14 +46,19 @@ def signup(request):
 
             if role == 'employee':
                 group = Group.objects.get(name='employee')
-                first_name = form.cleaned_data.get('first_name')
-                last_name = form.cleaned_data.get('last_name')
+                first_name = form.cleaned_data.get('employee_first_name')
+                last_name = form.cleaned_data.get('employee_last_name')
                 dob = form.cleaned_data.get('dob')
-                location = form.cleaned_data.get('location')
+                location = form.cleaned_data.get('employee_location')
                 Employee_profile.objects.create(user=user, first_name=first_name, last_name=last_name, dob=dob, location=location)
                 
             elif role == 'employer':
                 group = Group.objects.get(name='employer')
+                first_name = form.cleaned_data.get('employer_first_name')
+                last_name = form.cleaned_data.get('employer_last_name')
+                company = form.cleaned_data.get('company')
+                location = form.cleaned_data.get('employer_location')
+                Employer_profile.objects.create(user=user, first_name=first_name, last_name=last_name, company=company, location=location)
             
             user.groups.add(group)
             messages.success(request, 'Account was created for ' + username)
@@ -94,19 +102,43 @@ def employer_jobs(request):
 
 @login_required(login_url='login')
 def employee_profile(request):
-    is_employee = request.user.groups.filter(name='employee').exists()
-    employee = request.user
-    active_jobs = Job.objects.filter(employee=employee, is_active=True)
-    completed_jobs = Job.objects.filter(employee=employee, is_completed=True).exclude(rating__isnull=True)
-    return render(request, 'employee/employee_profile.html', {'is_employee': is_employee, 'employee': employee, 'employee_jobs': active_jobs, 'completed_jobs':completed_jobs})
+    user = request.user
+    is_employer = user.groups.filter(name='employer').exists()
+    is_employee = user.groups.filter(name='employee').exists()
+
+    if is_employee:
+        active_jobs = Job.objects.filter(employee=user, is_active=True)
+        completed_jobs = Job.objects.filter(employee=user, is_completed=True).exclude(employer_rating__isnull=True)
+        return render(request, 'employee/employee_profile.html', {
+            'is_employee': is_employee,
+            'is_employer': is_employer,
+            'employee': user, 
+            'employee_profile':user.employee_profile,
+            'employee_jobs': active_jobs,
+            'jobs_done':completed_jobs,
+        })
+    else:
+        return redirect('home')
 
 @login_required(login_url='login')
 def employer_profile(request):
-    is_employer = request.user.groups.filter(name='employer').exists()
-    employer = request.user
-    active_jobs = Job.objects.filter(employer=employer, is_active=True)
-    completed_jobs = Job.objects.filter(employer=employer, is_completed=True).exclude(rating__isnull=True)
-    return render(request, 'employer/employer_profile.html', {'is_employer': is_employer, 'employer': employer, 'employer_jobs': active_jobs, 'jobs_done':completed_jobs})
+    user = request.user
+    is_employer = user.groups.filter(name='employer').exists()
+    is_employee = user.groups.filter(name='employee').exists()
+
+    if is_employer:
+        active_jobs = Job.objects.filter(employer=user, is_active=True)
+        completed_jobs = Job.objects.filter(employer=user, is_completed=True).exclude(employee_rating__isnull=True)
+        return render(request, 'employer/employer_profile.html', {
+            'is_employee': is_employee,
+            'is_employer': is_employer,
+            'employer': user, 
+            'employer_profile':user.employer_profile,
+            'employer_jobs': active_jobs,
+            'jobs_done':completed_jobs,
+        })
+    else:
+        return redirect('home')
 
 @unauthenticated_user
 def reset_password(request):
@@ -146,3 +178,50 @@ def reset_password(request):
     
     return render(request, 'user/reset_password.html', {'form':form})
 
+def view_employer_profile(request, username):
+    try:
+        user=User.objects.get(username=username)
+        is_employee = user.groups.filter(name='employee').exists()
+        is_employer = user.groups.filter(name='employer').exists()
+        if is_employer:
+            employer_profile = Employer_profile.objects.get(user=user)
+            active_jobs = Job.objects.filter(employer=user, is_active=True)
+            completed_jobs = Job.objects.filter(employer=user, is_completed=True).exclude(employee_rating__isnull=True)
+            return render(request, 'employer/employer_profile.html', {
+                'is_employee': is_employee,
+                'is_employer': is_employer,
+                'employer': user,
+                'employer_profile': employer_profile,
+                'employer_jobs': active_jobs,
+                'jobs_done': completed_jobs,
+            })
+        else:
+            messages.error(request, 'This user is not an employer.')
+            return redirect('home')
+    except User.DoesNotExist:
+        messages.error(request, 'Employer not found.')
+        return redirect('home')
+    
+def view_employee_profile(request, username):
+    try:
+        user=User.objects.get(username=username)
+        is_employee = user.groups.filter(name='employee').exists()
+        is_employer = user.groups.filter(name='employer').exists()
+        if is_employee:
+            employee_profile = Employee_profile.objects.get(user=user)
+            active_jobs = Job.objects.filter(employee=user, is_active=True)
+            completed_jobs = Job.objects.filter(employee=user, is_completed=True).exclude(employer_rating__isnull=True)
+            return render(request, 'employee/employee_profile.html', {
+                'is_employee': is_employee,
+                'is_employer': is_employer,
+                'employee': user,
+                'employee_profile': employee_profile,
+                'employee_jobs': active_jobs,
+                'completed_jobs': completed_jobs,
+            })
+        else:
+            messages.error(request, 'This user is not an employee.')
+            return redirect('home')
+    except User.DoesNotExist:
+        messages.error(request, 'Employee not found.')
+        return redirect('home')

@@ -7,3 +7,4 @@ def unauthenticated_user(view_func):
             else:
                 return view_func(request, *args, **kwargs)
     return wrapper_func
+
