@@ -23,8 +23,9 @@ def apply(request, job_id):
 
 @login_required(login_url='login')
 def employee_applications(request):
-    applications = Application.objects.filter(applicant=request.user).exclude(status__in=['Accepted', 'Rejected'])
-    return render(request, 'employee/employee_applications.html', {'applications': applications})
+    is_employee = request.user.groups.filter(name='employee').exists()
+    applications = Application.objects.filter(applicant=request.user)
+    return render(request, 'employee/employee_applications.html', {'applications': applications, 'is_employee': is_employee})
 
 @login_required(login_url='login')
 def edit_application(request, application_id):
@@ -48,8 +49,9 @@ def delete_application(request, application_id):
 
 @login_required(login_url='login')
 def employee_active_jobs(request):
+    is_employee = request.user.groups.filter(name='employee').exists()
     active_jobs = Job.objects.filter(employee=request.user, is_active=True)
-    return render(request, 'employee/active_jobs.html', {'employee_jobs':active_jobs})
+    return render(request, 'employee/active_jobs.html', {'employee_jobs':active_jobs, 'is_employee':is_employee})
 
 @login_required(login_url='login')
 def rate_employer(request, job_id):

@@ -17,4 +17,4 @@ class Application(models.Model):
     cover_letter = models.TextField()
     resume = models.FileField(upload_to='resumes/')
     date_applied = models.DateField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Pending')
+    status = models.CharField(max_length=20, choices=STATUS, default='pending')
