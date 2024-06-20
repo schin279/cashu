@@ -4,9 +4,10 @@ from django.core.exceptions import ValidationError
 import os
 
 class CreateJobForm(forms.ModelForm):
+    
     class Meta:
         model = Job
-        fields = ['title', 'description', 'requirements', 'attachment', 'location', 'pay_rate', 'start_date', 'category']
+        fields = ['title', 'description', 'requirements', 'attachment', 'location', 'pay_rate', 'start_date', 'end_date', 'vacancies', 'category']
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Enter the job title'}),
             'description': forms.Textarea(attrs={'placeholder': 'Enter job details'}),
@@ -14,6 +15,8 @@ class CreateJobForm(forms.ModelForm):
             'location': forms.TextInput(attrs={'placeholder': 'Enter job location'}),
             'pay_rate': forms.NumberInput(attrs={'placeholder': 'Enter the hourly rate'}),
             'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+            'vacancies': forms.NumberInput(attrs={'placeholder': 'Enter number of vacancies'}),
         }
     
     def validate_file_extension(value):
@@ -33,9 +36,4 @@ class CreateJobForm(forms.ModelForm):
                 raise forms.ValidationError('Only PDF, DOC, or DOCX files are allowed.')
             return attachment
         else:
-            return None
-
-class ReviewForm(forms.ModelForm):
-    class Meta:
-        model=Job
-        fields = ['rating', 'feedback']        
+            return None     

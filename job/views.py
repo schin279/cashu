@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import CreateJobForm, ReviewForm
+from .forms import CreateJobForm
 from .models import Job
 from applications.models import Application
-
-# Create your views here.
+from django.utils import timezone
 
 # job posting functionality (employer)
 @login_required(login_url='login')
@@ -40,7 +39,7 @@ def edit_job(request, job_id):
             return redirect('employer_jobs')
     else:
         form = CreateJobForm(instance=job)
-    return render(request, 'employer/edit_job.html', {'form': form})
+    return render(request, 'employer/edit_job.html', {'form': form, 'job': job})
 
 # delete job posts (employer)
 @login_required(login_url='login')
@@ -54,7 +53,7 @@ def delete_job(request, job_id):
 
 def job_list(request):
     category = request.GET.get('category')
-    jobs = Job.objects.filter(is_deleted=False)
+    jobs = Job.objects.filter(is_deleted=False, vacancies__gt=0)
     is_employee = request.user.groups.filter(name='employee').exists()
     is_employer = request.user.groups.filter(name='employer').exists()
 
@@ -85,14 +84,16 @@ def review_application(request, application_id):
 def accept_application(request, application_id):
     application = get_object_or_404(Application, application_id=application_id)
     if application.job.employer == request.user:
-        application.status = 'Accepted'
-        application.save()
+        if application.job.has_vacancies():
+            application.status = 'Accepted'
+            application.save()
         
-        # updates job status to active
-        job = application.job
-        job.is_active = True
-        job.employee = application.applicant
-        job.save()
+            # updates job status to active
+            job = application.job
+            job.is_active = True
+            job.employee = application.applicant
+            job.vacancies -= 1
+            job.save()
     return redirect('view_applications', job_id=application.job.job_id)
 
 # functionality to reject applications (employer)
@@ -107,31 +108,42 @@ def reject_application(request, application_id):
 # updates job listing when application is accepted
 @login_required(login_url='login')
 def employer_jobs(request):
-    jobs = Job.objects.filter(employer=request.user, is_deleted=False)
+    jobs = Job.objects.filter(employer=request.user, is_deleted=False, vacancies__gt=0)
     jobs_posted = []
     for job in jobs:
-        if not Application.objects.filter(job=job, status='Accepted').exists():
+        if not Application.objects.filter(job=job, status='Accepted').exists() and job.has_vacancies():
             jobs_posted.append(job)
     return render(request, 'employer/employer_jobs.html', {'jobs_posted': jobs_posted})
 
 @login_required(login_url='login')
 def employer_active_jobs(request):
     is_employer = request.user.groups.filter(name='employer').exists()
-    active_jobs = Job.objects.filter(employer=request.user, is_active=True, is_completed=False)
+    active_jobs = Job.objects.filter(employer=request.user, is_active=True)
     return render(request, 'employer/active_jobs.html', {'active_jobs':active_jobs, 'is_employer':is_employer})
 
 @login_required(login_url='login')
 def job_completed(request, job_id):
     job = get_object_or_404(Job, job_id=job_id)
-    if request.method == 'POST':
-        rating = request.POST.get('rating')
-        feedback = request.POST.get('feedback')
 
-        job.rating = rating
-        job.feedback = feedback
-        job.is_completed = True
-        job.save()
-        return redirect('employer_active_jobs')
+    # check if job is completed
+    if job.end_date and job.end_date <= timezone.now().date():
+        if request.method == 'POST':
+            rating = request.POST.get('rating')
+            feedback = request.POST.get('feedback')
+
+            if feedback is not None and feedback.strip() != '':
+                job.employee_rating = rating
+                job.employee_feedback = feedback
+                job.is_completed = True
+                job.save()
+
+                return redirect('employer_active_jobs')
+            else:
+                # Handle the case where feedback is not provided
+                # You may render a form error message or handle it in another appropriate way
+                return render(request, 'employer/active_jobs.html', {'job': job, 'error_message': 'Please provide feedback.'})
+    
+    return render(request, 'employer/active_jobs.html', {'job': job})
     
 def job_details(request, job_id):
     is_employee = request.user.groups.filter(name='employee').exists()
